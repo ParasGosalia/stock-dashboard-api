@@ -87,4 +87,44 @@ Stock Dashboard API
        b) Now you can either build the application using command prompt or 
           you can open this application in Intellij/Eclipse 
           and run the main class as SpringBoot application.
+      
+       c) Once the application is up and running , if you testing through Postman/REST API Client, 
+           Please use the below URL to authenticate and get the JWT Token.
+           http://localhost:8081/authenticate
+           Input : 
+            {
+             "username" : "admin",
+             "password" : "password"
+            }
+            OR 
+           {
+             "username" : "user",
+             "password" : "password"
+            }
+      
+       d) I have created 2 roles in H2 Database, user and admin. User would just be able to view all the stocks and search stock by Id
+          but admin would be able to perform all the operations like view all stocks, Add a stock, Update a stock and Search stock.
+       
+       e)  Once you have received the JWT Token as output you can add the Bearer appended JWT Token into the header of the REST API Calls 
+           as shown below :   
+           content-type: application/json
+           authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlzQWRtaW4iOnRydWUsImV4cCI6MTYxNTU4MTc3NSwiaWF0IjoxNjE1NTc4MTc1fQ.firzfbWT6_dBFXukmv-1oZohz7aK99ZE-Wo_Pzj_9oC3aGjkbC-4VZXQIaQKSnuKnuknbVq-iihxSh8b2MTq3w
+   
+       f)  Please find below the list of REST API`s and sample requests
+           i)Add a Stock
+             POST  : http://localhost:8081/api/stocks 
+             INPUT EXAMPLE :{"stockName":"ABC","currentPrice":500}
+            
+           ii) Get all the Stocks 
+               GET Request: http://localhost:8081/api/stocks
+             
+           iii) Get Stock By Id
+                GET REquest: http://localhost:8081/api/stocks/1
+           
+           iv) Update a Stock
+               PUT Request: http://localhost:8081/api/stocks/1?currentPrice=300
+
+           v) Delete a Stock
+              DELETE Request : http://localhost:8081/api/stocks/1
+        
                                    
