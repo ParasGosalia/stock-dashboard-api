@@ -3,6 +3,7 @@ package com.sample.payconiq.stocks.controller;
 import com.sample.payconiq.stocks.model.StockRequest;
 import com.sample.payconiq.stocks.model.StockResponse;
 import com.sample.payconiq.stocks.services.StocksService;
+import com.sample.payconiq.stocks.utils.StockUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,6 @@ public class StocksController {
 
     @GetMapping("/stocks")
     public ResponseEntity<List<StockResponse>> getAllStocks() {
-        try {
             log.info("Get All Stocks API Called");
             List<StockResponse> stocks;
             stocks = stocksService.getAllStocks();
@@ -34,63 +34,49 @@ public class StocksController {
             else {
                 return new ResponseEntity<>(stocks, HttpStatus.OK);
             }
-        } catch (Exception e) {
-            log.error("Error in getAllStocks function {}", e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @GetMapping("/stocks/{id}")
     public ResponseEntity<List<StockResponse>> getStocksById(@PathVariable("id") long id) {
         StockResponse stockData;
-        try {
             log.info("Get Stock by Id API Called");
             stockData = stocksService.getStockById(id);
             return new ResponseEntity<>(Collections.singletonList(stockData), HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Error in getStocksById function {}", e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
 
     }
 
     @PostMapping("/stocks")
     public ResponseEntity<StockResponse> addStocks(@RequestBody StockRequest stock) {
-        try {
             log.info("Add Stocks API Called");
-            return new ResponseEntity<>(stocksService.addStock(stock), HttpStatus.CREATED);
-        } catch (Exception e) {
-            log.error("Error in addStocks function {}", e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            if(StockUtils.validateRequest(stock)) {
+                return new ResponseEntity<>(stocksService.addStock(stock), HttpStatus.CREATED);
+            } else
+            {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
     }
 
 
     @PutMapping("/stocks/{id}")
     public ResponseEntity<StockResponse> updateStocks(@PathVariable("id") long id, @RequestParam("currentPrice") double currentPrice) {
-
-        try {
             log.info("Update Stock API Called");
-            StockResponse stockUpdated = stocksService.updateStock(id, currentPrice);
-            return new ResponseEntity<>(stockUpdated, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Error in updateStocks function {}", e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+            if(StockUtils.validatePrice(currentPrice)) {
+                return new ResponseEntity<>(stocksService.updateStock(id, currentPrice), HttpStatus.OK);
+            }else
+            {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+
     }
 
 
     @DeleteMapping("/stocks/{id}")
     public ResponseEntity<HttpStatus> deleteStocks(@PathVariable("id") long id) {
-        try {
             log.info("Delete Stock API Called");
             stocksService.deleteStockById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            log.error("Error in deleteStocks function {}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+
 
 
 }

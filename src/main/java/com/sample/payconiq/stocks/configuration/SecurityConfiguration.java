@@ -10,7 +10,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,6 +24,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationRequestFilter authenticationRequestFilter;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService);
@@ -50,17 +50,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/stocks").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/api/stocks/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/api/stocks/").hasRole("ADMIN")
-                .antMatchers("/authenticate").permitAll().anyRequest().authenticated().
+                .antMatchers("/authenticate").permitAll().anyRequest().authenticated().and().
+                exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).
                 and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
                 and().addFilterBefore(authenticationRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-                .antMatchers("/h2-ui/**");
-    }
-
-
 
 }

@@ -10,8 +10,8 @@ import java.util.List;
 public interface StocksService {
 
     List<StockResponse> getAllStocks();
-    StockResponse getStockById(long id) throws Exception;
-    StockResponse updateStock(long id, double currentPrice) throws Exception;
+    StockResponse getStockById(long id) ;
+    StockResponse updateStock(long id, double currentPrice);
     StockResponse addStock(StockRequest stock);
     void deleteStockById(long id);
 

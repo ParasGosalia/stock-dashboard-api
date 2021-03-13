@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import static com.sample.payconiq.stocks.utils.Constants.DATE_FORMAT;
 
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class StocksServiceImpl implements StocksService {
         return mapToResponseDTO(stock);
     }
 
-    public StockResponse updateStock(long id, double stockPrice) throws Exception {
+    public StockResponse updateStock(long id, double stockPrice) {
         log.debug("Updating Stock id {} with price {}", id, stockPrice);
         Stocks stocks = stocksRepository.findById(id)
                 .map(stockUpdated -> {
