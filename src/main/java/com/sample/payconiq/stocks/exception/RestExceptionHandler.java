@@ -3,6 +3,8 @@ package com.sample.payconiq.stocks.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,16 +33,29 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleConflict(request, HttpStatus.NOT_FOUND,bodyOfResponse);
     }
 
+    @ExceptionHandler(value = {BadCredentialsException.class})
+    public ResponseEntity<?> badCredentialsException(BadCredentialsException ex, WebRequest request) {
+        log.warn("handling Bad Credentials exception.. {}", ex.getMessage());
+        bodyOfResponse = "Your username/password is incorrect";
+        return handleConflict(request, HttpStatus.UNAUTHORIZED, bodyOfResponse);
+    }
+
     @ExceptionHandler(value = {RuntimeException.class})
     public ResponseEntity<?> internalError(RuntimeException ex, WebRequest request) {
-        log.warn("handling Internal Error... {}", ex.getMessage());
-        bodyOfResponse = "An Internal error has occurred.We cannot process your request at the moment.";
-        return handleConflict(request, HttpStatus.INTERNAL_SERVER_ERROR, bodyOfResponse);
+        if(ex instanceof InternalAuthenticationServiceException)
+        {
+            log.warn("handling Disabled User exception.. {}", ex.getMessage());
+            return handleConflict(request, HttpStatus.UNAUTHORIZED, ex.getMessage());
+        }else {
+            log.warn("handling Internal Error... {}", ex.getMessage());
+            bodyOfResponse = "An Internal error has occurred.We cannot process your request at the moment.";
+            return handleConflict(request, HttpStatus.INTERNAL_SERVER_ERROR, bodyOfResponse);
+        }
+
     }
 
     protected ResponseEntity<Object> handleConflict(
             WebRequest request, HttpStatus status, String message ) {
-
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("status", status.value());
         body.put("message", message);
