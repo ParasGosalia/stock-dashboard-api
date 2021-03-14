@@ -1,0 +1,31 @@
+server:
+  port: 8081
+
+#H2 Database Configuration
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/sample
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+    initialization-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+  h2:
+    console:
+      enabled: true
+      path: /h2-ui
+
+
+#JWT Configuration
+jwt:
+  secret-key: secretkey
+  token-validity: 3600000
+
+
+  #CORS Configuration
+app:
+  url: http://localhost:4200,http://localhost:8080
+
