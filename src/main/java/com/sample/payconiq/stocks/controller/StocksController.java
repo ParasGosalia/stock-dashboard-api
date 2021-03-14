@@ -46,25 +46,25 @@ public class StocksController {
     }
 
     @PostMapping("/stocks")
-    public ResponseEntity<StockResponse> addStocks(@RequestBody StockRequest stock) {
+    public ResponseEntity<?> addStocks(@RequestBody StockRequest stock) {
             log.info("Add Stocks API Called");
             if(StockUtils.validateRequest(stock)) {
                 return new ResponseEntity<>(stocksService.addStock(stock), HttpStatus.CREATED);
             } else
             {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Please enter a valid Input", HttpStatus.BAD_REQUEST);
             }
     }
 
 
     @PutMapping("/stocks/{id}")
-    public ResponseEntity<StockResponse> updateStocks(@PathVariable("id") long id, @RequestParam("currentPrice") double currentPrice) {
+    public ResponseEntity<?> updateStocks(@PathVariable("id") long id, @RequestParam("currentPrice") double currentPrice) {
             log.info("Update Stock API Called");
             if(StockUtils.validatePrice(currentPrice)) {
                 return new ResponseEntity<>(stocksService.updateStock(id, currentPrice), HttpStatus.OK);
             }else
             {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Please enter a valid Stock Price", HttpStatus.BAD_REQUEST);
             }
 
     }
