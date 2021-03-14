@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
@@ -46,7 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // We don't need CSRF for this example
         http.cors().and().csrf().disable()
                 .authorizeRequests().
-                 antMatchers(HttpMethod.GET, "/api/stocks/**").hasAnyRole("USER","ADMIN")
+                antMatchers(HttpMethod.GET, "/api/stocks/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.POST, "/api/stocks").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/api/stocks/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/api/stocks/").hasRole("ADMIN")

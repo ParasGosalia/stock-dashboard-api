@@ -12,26 +12,26 @@ import java.io.IOException;
 import java.util.Collections;
 
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint{
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 
-	@Override
-	public void commence(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException authException) throws IOException {
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+                         AuthenticationException authException) throws IOException {
 
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-		String message;
+        String message;
 
-		if (authException.getCause() != null) {
-			message = authException.getCause().toString() + " " + authException.getMessage();
-		} else {
-			message = authException.getMessage();
-		}
+        if (authException.getCause() != null) {
+            message = authException.getCause().toString() + " " + authException.getMessage();
+        } else {
+            message = authException.getMessage();
+        }
 
-		byte[] body = new ObjectMapper().writeValueAsBytes(Collections.singletonMap("error", message));
+        byte[] body = new ObjectMapper().writeValueAsBytes(Collections.singletonMap("error", message));
 
-		response.getOutputStream().write(body);
-	}
+        response.getOutputStream().write(body);
+    }
 }

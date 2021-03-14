@@ -7,7 +7,7 @@ import com.sample.payconiq.stocks.model.StockResponse;
 import com.sample.payconiq.stocks.repository.StocksRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +20,7 @@ import static com.sample.payconiq.stocks.utils.Constants.DATE_FORMAT;
 
 @RequiredArgsConstructor
 @Slf4j
-@Component
+@Service
 public class StocksServiceImpl implements StocksService {
 
 
@@ -58,7 +58,7 @@ public class StocksServiceImpl implements StocksService {
 
     public StockResponse addStock(StockRequest stock) {
         Stocks stocks = stocksRepository.findByStockName(stock.getStockName());
-        if (stocks!=null) {
+        if (stocks != null) {
             stocks.setCurrentPrice(stock.getCurrentPrice());
             stocks.setLastUpdate(LocalDateTime.now());
             log.debug("Stock with name {} already present so updated its currentPrice to {}", stock.getStockName(), stock.getCurrentPrice());

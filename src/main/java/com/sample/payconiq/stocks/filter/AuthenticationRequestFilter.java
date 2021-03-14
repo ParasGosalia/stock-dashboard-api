@@ -3,8 +3,8 @@ package com.sample.payconiq.stocks.filter;
 import com.sample.payconiq.stocks.services.UserDetailsServiceImpl;
 import com.sample.payconiq.stocks.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,20 +20,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@RequiredArgsConstructor
 @Component
 @Slf4j
 public class AuthenticationRequestFilter extends OncePerRequestFilter {
-    @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
-
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        try{
+        try {
             log.info("Authenticating the user with JWT Token");
             String jwtToken = extractJwtFromRequest(request);
             if (StringUtils.hasText(jwtToken) && jwtTokenUtil.validateToken(jwtToken)) {
@@ -43,10 +41,9 @@ public class AuthenticationRequestFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             } else {
-               log.warn("Cannot set the Security Context");
+                log.warn("Cannot set the Security Context");
             }
-        }catch(ExpiredJwtException | BadCredentialsException ex)
-        {
+        } catch (ExpiredJwtException | BadCredentialsException ex) {
             log.error("Error while authentication the user {}", ex.getMessage());
             throw ex;
         }

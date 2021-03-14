@@ -21,9 +21,8 @@ spring:
 
 #JWT Configuration
 jwt:
-  secret: secretkey
-  token:
-    validity: 3600000
+  secret-key: secretkey
+  token-validity: 3600000
 
 
   #CORS Configuration

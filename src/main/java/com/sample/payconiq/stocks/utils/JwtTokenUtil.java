@@ -1,7 +1,8 @@
 package com.sample.payconiq.stocks.utils;
 
+import com.sample.payconiq.stocks.configuration.JWTPropertiesConfiguration;
 import io.jsonwebtoken.*;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,14 +13,12 @@ import java.util.*;
 
 import static com.sample.payconiq.stocks.utils.Constants.*;
 
+@RequiredArgsConstructor
 @Component
 public class JwtTokenUtil {
 
-    @Value("${jwt.token.validity}")
-    private String jwtTokenValidity;
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private final JWTPropertiesConfiguration jwtPropertiesConfiguration;
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
@@ -38,30 +37,28 @@ public class JwtTokenUtil {
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(jwtTokenValidity)))
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(jwtPropertiesConfiguration.getTokenValidity())))
+                .signWith(SignatureAlgorithm.HS512, jwtPropertiesConfiguration.getSecretKey()).compact();
 
     }
 
-    public boolean validateToken(String authToken) {
+    public boolean validateToken(String authToken) throws ExpiredJwtException {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(jwtPropertiesConfiguration.getSecretKey()).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
             throw new BadCredentialsException("INVALID_CREDENTIALS", ex);
-        } catch (ExpiredJwtException ex) {
-            throw ex;
         }
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser().setSigningKey(jwtPropertiesConfiguration.getSecretKey()).parseClaimsJws(token).getBody();
         return claims.getSubject();
 
     }
 
     public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
-        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser().setSigningKey(jwtPropertiesConfiguration.getSecretKey()).parseClaimsJws(token).getBody();
 
         List<SimpleGrantedAuthority> roles = null;
 
@@ -78,8 +75,6 @@ public class JwtTokenUtil {
         return roles;
 
     }
-
-
 
 
 }
